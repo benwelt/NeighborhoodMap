@@ -48,68 +48,15 @@ function Brewery(place) {
 
   this.title = place.name;
   this.position = place.location;
-  this.location = "";
+  this.address = "";
   this.website = "";
-  this.hours = "";
-  this.venueID = "";
-  this.businessID = "";
-  this.infoWindowContent = "<div><strong>" + self.title + "</strong></div><br>";
+  this.isOpen = "";
+  this.placeID = "";
+  this.infoWindowContent = "";
   this.defaultMarker = 'img/beer_icon_dark.png';
   this.highlightedMarker = 'img/beer_icon_light.png';
 
-  var CLIENTID = "fTINc3XGawRKK2RCEJ6o-3eUTXHoFG7Vczl96kklKgvMUygr3lA3M6eJMo71pZI-HotNMDqKN_3BCzKRf5JIILL1SWuqw24yQ_WkxGW09ndeXbrdRxXhVdgj7S8zWnYx";
-
-  var idURL = "https://api.yelp.com/v3/businesses/";
-  var searchURL = "https://api.yelp.com/v3/businesses/search"
-  searchURL += '?' + $.param({
-    'latitude': self.position['lat'],
-    'longitude': self.position['lng'],
-    'term': self.title,
-    'limit': 1
-  });
-
-  $.ajax({
-    url: searchURL,
-    headers: {
-      Authorization: "Bearer " + CLIENTID,
-      Access-Control-Allow-Origin: '*'
-    },
-    success: function(data) {
-      console.log('success');
-    }
-  });
-
-  /*
-  $.getJSON(searchURL).done(function(data) {
-    var results = data.response.venues[0];
-    // Get address
-    if (results.location.address) {
-      self.location = results.location.address;
-      self.infoWindowContent += "<div>" + self.location + "</div>";
-    }
-    // Get venue ID to get more info
-    self.venueID = results.id;
-
-    // Send second request
-    idURL += self.venueID + '?' + $.param({
-      'client_id': CLIENTID,
-      'client_secret': CLIENT_SECRET,
-      'v': '20171212'
-    });
-    $.getJSON(idURL).done(function(data2) {
-      var results2 = data2.response.venue;
-      if (results2.hours) {
-        self.hours = results2.hours.status;
-        self.infoWindowContent += "<div>" + self.hours + "</div>";
-      }
-    });
-
-    if (results.url) {
-        self.website = results.url;
-        self.infoWindowContent += "<div><a target='_blank' href='" + self.website + "'>" + self.website + "</a></div><br>";
-    }
-  });
-  */
+  var d = new Date();
 
   this.marker = new google.maps.Marker({
     position: self.position,
@@ -119,7 +66,45 @@ function Brewery(place) {
     animation: google.maps.Animation.DROP
   });
 
-  this.setInfoWindowContent = function() {
+  this.setInfoWindowContent = function(marker, infoWindow) {
+    var service = new google.maps.places.PlacesService(map);
+    var weekday = d.getDay();
+
+    service.textSearch({
+      query: self.title,
+      location: self.position
+    }, function(place, status) {
+      if (status == google.maps.places.PlacesServiceStatus.OK) {
+        infoWindow.marker = marker;
+        self.placeID = place[0].place_id;
+        self.infoWindowContent = "<div><strong>" + self.title + "</strong></div><br>"
+      }
+
+      if (self.placeID) {
+        service.getDetails({
+          placeId: self.placeID
+        }, function(place, status) {
+          self.address = place.formatted_address;
+          self.website = place.website;
+          for (var i=0; i<place.opening_hours.periods.length; i++) {
+            if (i === weekday) {
+              self.isOpen = place.opening_hours.periods[i].close.time;
+            }
+          }
+          console.log("Open until " + self.isOpen);
+          self.infoWindowContent += "<div>Open until " + self.isOpen + "</div>";
+        });
+      }
+
+      infoWindow.setContent(self.infoWindowContent);
+      infoWindow.open(map, marker);
+      infoWindow.addListener('closeclick', function() {
+        infoWindow.marker = null;
+      });
+
+    });
+
+
 
   }
 
@@ -133,19 +118,8 @@ function Brewery(place) {
 
   // Open info window onclick
   this.marker.addListener('click', function() {
-    self.openInfoWindow(this, infoWindow);
+    self.setInfoWindowContent(this, infoWindow);
   });
-
-  this.openInfoWindow = function(marker, infoWindow) {
-    if (infoWindow.marker != marker) {
-      infoWindow.marker = marker;
-      infoWindow.setContent(self.infoWindowContent);
-      infoWindow.open(map, marker);
-      infoWindow.addListener('closeclick', function() {
-        infoWindow.marker = null;
-      });
-    }
-  }
 
   this.menuClick = function(place) {
     google.maps.event.trigger(self.marker, 'click');
