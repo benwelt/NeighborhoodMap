@@ -71,7 +71,8 @@ function Brewery(place) {
   $.ajax({
     url: searchURL,
     headers: {
-      Authorization: "Bearer "+CLIENTID
+      Authorization: "Bearer " + CLIENTID,
+      Access-Control-Allow-Origin: '*'
     },
     success: function(data) {
       console.log('success');
