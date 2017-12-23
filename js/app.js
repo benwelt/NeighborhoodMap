@@ -49,7 +49,7 @@ function Brewery(place) {
   this.title = place.name;
   this.position = place.location;
   this.address = "";
-  this.website = "";
+  this.phone = "";
   this.isOpen = "";
   this.placeID = "";
   this.infoWindowContent = "";
@@ -68,7 +68,6 @@ function Brewery(place) {
 
   this.setInfoWindowContent = function(marker, infoWindow) {
     var service = new google.maps.places.PlacesService(map);
-    var weekday = d.getDay();
 
     service.textSearch({
       query: self.title,
@@ -77,7 +76,6 @@ function Brewery(place) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         infoWindow.marker = marker;
         self.placeID = place[0].place_id;
-        self.infoWindowContent = "<div><strong>" + self.title + "</strong></div><br>"
       }
 
       if (self.placeID) {
@@ -85,27 +83,31 @@ function Brewery(place) {
           placeId: self.placeID
         }, function(place, status) {
           self.address = place.formatted_address;
-          self.website = place.website;
-          for (var i=0; i<place.opening_hours.periods.length; i++) {
-            if (i === weekday) {
-              self.isOpen = place.opening_hours.periods[i].close.time;
-            }
+          self.phone = place.formatted_phone_number;
+          if (place.opening_hours.open_now === true) {
+            self.isOpen = "Open Now";
+          }else {
+            self.isOpen = "Closed Now";
           }
-          console.log("Open until " + self.isOpen);
-          self.infoWindowContent += "<div>Open until " + self.isOpen + "</div>";
+          console.log(self.isOpen);
         });
       }
-
-      infoWindow.setContent(self.infoWindowContent);
-      infoWindow.open(map, marker);
-      infoWindow.addListener('closeclick', function() {
-        infoWindow.marker = null;
-      });
-
     });
 
+    self.openInfoWindow(marker, infoWindow);
+  }
 
+  this.openInfoWindow = function(marker, infoWindow) {
+    self.infoWindowContent = "<div><strong>" + self.title + "</strong></div>";
+    self.infoWindowContent += "<div>" + self.isOpen + "</div><br>";
+    self.infoWindowContent += "<div>" + self.phone + "</div>";
+    self.infoWindowContent += "<div>" + self.address + "</div>";
 
+    infoWindow.setContent(self.infoWindowContent);
+    infoWindow.open(map, marker);
+    infoWindow.addListener('closeclick', function() {
+      infoWindow.marker = null;
+    });
   }
 
   // Change marker symbol on mouseover
