@@ -87,12 +87,12 @@ function Brewery(place) {
 
   this.setInfoWindowContent = function(marker, infoWindow) {
     var service = new google.maps.places.PlacesService(map);
-    var url = "https://api.wunderground.com/api/bd499f20ed8dfbd6/conditions/q/" + self.position['lat'] + "," + self.position['lng'] + ".json";
+    var url = "https://api.wunderground.com/api/bd499f20ed8dfbd6/hourly/q/" + self.position['lat'] + "," + self.position['lng'] + ".json";
 
     $.getJSON(url, function(data) {
-      self.currentTemp = data.current_observation.temperature_string;
-      self.currentWeather = data.current_observation.weather;
-      self.weatherIcon = data.current_observation.icon_url;
+      self.currentTemp = data.hourly_forecast[0].temp.english;
+      self.currentWeather = data.hourly_forecast[0].fctcode;
+      self.weatherIcon = data.hourly_forecast[0].icon_url;
     }).done(function() {
 
       service.textSearch({
@@ -138,7 +138,7 @@ function Brewery(place) {
     self.infoWindowContent += "<div>" + self.phone + "</div>";
     self.infoWindowContent += "<div>" + self.address[0] + "</div>";
     self.infoWindowContent += "<div>" + self.address[1] + ", " + self.address[2] + "</div><br>";
-    if (self.currentWeather == 'Snow' || self.currentWeather == 'Rain') {
+    if (self.currentWeather > 8) {
       self.infoWindowContent += "<div>The weather is a little ugly. Get a beer and stay inside.</div>";
     }else if (self.currentTemp < 50) {
       self.infoWindowContent += "<div>It's a little chilly. Grab a beer and cozy up.</div>";
@@ -146,7 +146,7 @@ function Brewery(place) {
       self.infoWindowContent += "<div>Get a beer and enjoy the weather!</div>";
     }
 
-    $('.current-temp').html(self.currentTemp);
+    $('.current-temp').html(self.currentTemp + "°");
     $('.weather-icon').attr("src", self.weatherIcon).removeClass('hidden');
 
     infoWindow.setContent(self.infoWindowContent);
