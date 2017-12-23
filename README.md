@@ -1,8 +1,8 @@
 Neighborhood Map
 ======
-##### Neighborhood Map Project for the Udacity Full Stack Web Developer Nanodegree Program
+#### Neighborhood Map Project for the Udacity Full Stack Web Developer Nanodegree Program
 
-###### The purpose of this project is to use third party APIs to pull data for different locations dynamically.
+##### The purpose of this project is to build a web application using third party APIs to call location based data.
 The [Google Maps Javascript API](https://developers.google.com/maps/documentation/javascript/) and the [Weather Underground web API](https://www.wunderground.com/weather/api) were both used to give the user information about breweries in the Salt Lake City area.
 
 The app is required to:
@@ -13,7 +13,8 @@ The app is required to:
 * Be totally responsive
 
 ## The Website
----
+
+![Neighborhood Map](https://i.imgur.com/xL4nXOc.png)
 
 The working website can be found [here](https://benwelt.github.io/NeighborhoodMap/).
 
