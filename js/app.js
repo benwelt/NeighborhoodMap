@@ -66,6 +66,11 @@ function Brewery(place) {
     animation: google.maps.Animation.DROP
   });
 
+  this.formatAddress = function(address) {
+    var addressArray = address.split(",");
+    return addressArray[0];
+  }
+
   this.setInfoWindowContent = function(marker, infoWindow) {
     var service = new google.maps.places.PlacesService(map);
 
@@ -76,25 +81,29 @@ function Brewery(place) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         infoWindow.marker = marker;
         self.placeID = place[0].place_id;
-      }
 
-      if (self.placeID) {
-        service.getDetails({
-          placeId: self.placeID
-        }, function(place, status) {
-          self.address = place.formatted_address;
-          self.phone = place.formatted_phone_number;
-          if (place.opening_hours.open_now === true) {
-            self.isOpen = "Open Now";
-          }else {
-            self.isOpen = "Closed Now";
-          }
-          console.log(self.isOpen);
-        });
+        if (self.placeID) {
+          service.getDetails({
+            placeId: self.placeID
+          }, function(place, status) {
+            if (status == google.maps.places.PlacesServiceStatus.OK) {
+              self.address = self.formatAddress(place.formatted_address);
+              self.phone = place.formatted_phone_number;
+              if (place.opening_hours.open_now === true) {
+                self.isOpen = "Open Now";
+              }else {
+                self.isOpen = "Closed Now";
+              }
+              self.openInfoWindow(marker, infoWindow);
+            }else {
+              alert("Place details could not be found. Try reloading the page.");
+            }
+          });
+        }
+      }else {
+        alert("Something went wrong. Try reloading the page.");
       }
     });
-
-    self.openInfoWindow(marker, infoWindow);
   }
 
   this.openInfoWindow = function(marker, infoWindow) {
