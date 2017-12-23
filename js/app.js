@@ -117,6 +117,8 @@ function Brewery(place) {
           infoWindow.marker = null;
         }
       });
+    }).fail(function() {
+      alert("Something went wrong. Try reloading the page.");
     });
   }
 
@@ -134,7 +136,7 @@ function Brewery(place) {
     }
 
     $('.current-temp').html(self.currentTemp);
-    $('.weather-icon').attr("src", self.weatherIcon);
+    $('.weather-icon').attr("src", self.weatherIcon).removeClass('hidden');
 
     infoWindow.setContent(self.infoWindowContent);
     infoWindow.open(map, marker);

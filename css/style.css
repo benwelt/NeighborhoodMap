@@ -12,8 +12,14 @@ html, body {
 
 .nav-drawer {
   position: relative;
-  }
-  .wu-logo {
-    position: absolute;
-    bottom: 10px;
-  }
+}
+
+.wu-logo {
+  position: absolute;
+  bottom: 10px;
+  margin-left: 20%;
+}
+
+.hidden {
+  display: none;
+}

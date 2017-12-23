@@ -16,7 +16,7 @@
           <span class="mdl-layout-title">Neighborhood Map</span>
           <div class="mdl-layout-spacer"></div>
           <h6 class="current-temp"></h6>
-          <img src="" class="weather-icon" alt="weather icon" height="25px">
+          <img src="" class="weather-icon hidden" alt="weather icon" height="25px">
         </div>
       </header>
       <div class="mdl-layout__drawer nav-drawer">
@@ -30,7 +30,11 @@
         <nav class="mdl-navigation" data-bind="foreach: filteredBreweries">
           <a class="mdl-navigation__link" href="#" data-bind="text: title, click: menuClick"></a>
         </nav>
-        <img src="img/wunderground_logo.png" class="wu-logo" alt="wu logo" width="107px">
+        <div class="wu-logo">
+          <p>Weather provided by</p>
+          <a href="https://www.wunderground.com/" target="_blank"><img src="img/wunderground_logo.png" class="wu-img" alt="wu logo" width="107px"></a>
+        </div>
+
       </div>
     </div>
 
