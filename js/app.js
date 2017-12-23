@@ -53,6 +53,7 @@ function Brewery(place) {
   this.isOpen = "";
   this.placeID = "";
   this.currentTemp = "";
+  this.currentWeather = "";
   this.weatherIcon = "";
   this.infoWindowContent = "";
   this.defaultMarker = 'img/beer_icon_dark.png';
@@ -78,49 +79,62 @@ function Brewery(place) {
     var url = "http://api.wunderground.com/api/bd499f20ed8dfbd6/conditions/q/" + self.position['lat'] + "," + self.position['lng'] + ".json";
 
     $.getJSON(url, function(data) {
-      self.currentTemp = data.current_observation.temp_f;
+      self.currentTemp = data.current_observation.temperature_string;
+      self.currentWeather = data.current_observation.weather;
       self.weatherIcon = data.current_observation.icon_url;
-    });
+      console.log(self.currentWeather);
+    }).done(function() {
 
-    service.textSearch({
-      query: self.title,
-      location: self.position
-    }, function(place, status) {
-      if (status == google.maps.places.PlacesServiceStatus.OK) {
-        infoWindow.marker = marker;
-        self.placeID = place[0].place_id;
+      service.textSearch({
+        query: self.title,
+        location: self.position
+      }, function(place, status) {
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+          infoWindow.marker = marker;
+          self.placeID = place[0].place_id;
 
-        if (self.placeID) {
-          service.getDetails({
-            placeId: self.placeID
-          }, function(place, status) {
-            if (status == google.maps.places.PlacesServiceStatus.OK) {
-              self.address = self.formatAddress(place.formatted_address);
-              self.phone = place.formatted_phone_number;
-              if (place.opening_hours.open_now === true) {
-                self.isOpen = "Open Now";
+          if (self.placeID) {
+            service.getDetails({
+              placeId: self.placeID
+            }, function(place, status) {
+              if (status == google.maps.places.PlacesServiceStatus.OK) {
+                self.address = self.formatAddress(place.formatted_address);
+                self.phone = place.formatted_phone_number;
+                if (place.opening_hours.open_now === true) {
+                  self.isOpen = "Open Now";
+                }else {
+                  self.isOpen = "Closed Now";
+                }
+                self.openInfoWindow(marker, infoWindow);
               }else {
-                self.isOpen = "Closed Now";
+                alert("Place details could not be found. Try reloading the page.");
+                infoWindow.marker = null;
               }
-              self.openInfoWindow(marker, infoWindow);
-            }else {
-              alert("Place details could not be found. Try reloading the page.");
-              infoWindow.marker = null;
-            }
-          });
+            });
+          }
+        }else {
+          alert("Something went wrong. Try reloading the page.");
+          infoWindow.marker = null;
         }
-      }else {
-        alert("Something went wrong. Try reloading the page.");
-        infoWindow.marker = null;
-      }
+      });
     });
   }
 
   this.openInfoWindow = function(marker, infoWindow) {
-    self.infoWindowContent = "<div><strong>" + self.title + "</strong></div>";
-    self.infoWindowContent += "<div>" + self.isOpen + "</div><br>";
+    self.infoWindowContent = "<div><h6><strong>" + self.title + "</strong></h6></div>";
+    self.infoWindowContent += "<div class='open-status'>" + self.isOpen + "</div>";
     self.infoWindowContent += "<div>" + self.phone + "</div>";
-    self.infoWindowContent += "<div>" + self.address + "</div>";
+    self.infoWindowContent += "<div>" + self.address + "</div><br>";
+    if (self.currentWeather == 'Snow' || self.currentWeather == 'Rain') {
+      self.infoWindowContent += "<div>The weather is a little ugly. Get a beer and stay inside.</div>";
+    }else if (self.currentTemp < 50) {
+      self.infoWindowContent += "<div>It's a little chilly. Grab a beer and cozy up.</div>";
+    }else {
+      self.infoWindowContent += "<div>Get a beer and enjoy the weather!</div>";
+    }
+
+    $('.current-temp').html(self.currentTemp);
+    $('.weather-icon').attr("src", self.weatherIcon);
 
     infoWindow.setContent(self.infoWindowContent);
     infoWindow.open(map, marker);

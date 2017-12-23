@@ -9,3 +9,11 @@ html, body {
 .search-bar {
   padding: 5px;
 }
+
+.nav-drawer {
+  position: relative;
+  }
+  .wu-logo {
+    position: absolute;
+    bottom: 10px;
+  }
