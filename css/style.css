@@ -10,12 +10,8 @@ html, body {
   padding: 5px;
 }
 
-.nav-drawer {
-  position: relative;
-}
-
 .wu-logo {
-  margin-left: 20%;
+  margin: 0 0 5% 20%;
 }
 
 .hidden {

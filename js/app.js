@@ -54,6 +54,7 @@ function Brewery(place) {
   this.placeID = "";
   this.currentTemp = "";
   this.currentWeather = "";
+  this.weatherCode = "";
   this.weatherIcon = "";
   this.infoWindowContent = "";
   this.defaultMarker = 'img/beer_icon_dark.png';
@@ -90,7 +91,8 @@ function Brewery(place) {
 
     $.getJSON(url, function(data) {
       self.currentTemp = data.hourly_forecast[0].temp.english;
-      self.currentWeather = data.hourly_forecast[0].fctcode;
+      self.currentWeather = data.hourly_forecast[0].condition;
+      self.weatherCode = data.hourly_forecast[0].fctcode;
       self.weatherIcon = data.hourly_forecast[0].icon_url;
     }).done(function() {
 
@@ -137,7 +139,7 @@ function Brewery(place) {
     self.infoWindowContent += "<div>" + self.phone + "</div>";
     self.infoWindowContent += "<div>" + self.address[0] + "</div>";
     self.infoWindowContent += "<div>" + self.address[1] + ", " + self.address[2] + "</div><br>";
-    if (self.currentWeather > 8) {
+    if (self.weatherCode > 8) {
       self.infoWindowContent += "<div>The weather is a little ugly. Get a beer and stay inside.</div>";
     }else if (self.currentTemp < 50) {
       self.infoWindowContent += "<div>It's a little chilly. Grab a beer and cozy up.</div>";
@@ -145,8 +147,8 @@ function Brewery(place) {
       self.infoWindowContent += "<div>Get a beer and enjoy the weather!</div>";
     }
 
-    $('.current-temp').html(self.currentTemp + "°");
-    $('.weather-icon').attr("src", self.weatherIcon).removeClass('hidden');
+    $('.current-temp').html("Current weather at " + self.title + ": " + self.currentTemp + "°");
+    $('.weather-icon').attr({"src": self.weatherIcon,"title": self.currentWeather}).removeClass('hidden');
 
     infoWindow.setContent(self.infoWindowContent);
     infoWindow.open(map, marker);
