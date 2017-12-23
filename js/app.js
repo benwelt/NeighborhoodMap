@@ -52,6 +52,8 @@ function Brewery(place) {
   this.phone = "";
   this.isOpen = "";
   this.placeID = "";
+  this.currentTemp = "";
+  this.weatherIcon = "";
   this.infoWindowContent = "";
   this.defaultMarker = 'img/beer_icon_dark.png';
   this.highlightedMarker = 'img/beer_icon_light.png';
@@ -73,6 +75,12 @@ function Brewery(place) {
 
   this.setInfoWindowContent = function(marker, infoWindow) {
     var service = new google.maps.places.PlacesService(map);
+    var url = "http://api.wunderground.com/api/bd499f20ed8dfbd6/conditions/q/" + self.position['lat'] + "," + self.position['lng'] + ".json";
+
+    $.getJSON(url, function(data) {
+      self.currentTemp = data.current_observation.temp_f;
+      self.weatherIcon = data.current_observation.icon_url;
+    });
 
     service.textSearch({
       query: self.title,
@@ -97,11 +105,13 @@ function Brewery(place) {
               self.openInfoWindow(marker, infoWindow);
             }else {
               alert("Place details could not be found. Try reloading the page.");
+              infoWindow.marker = null;
             }
           });
         }
       }else {
         alert("Something went wrong. Try reloading the page.");
+        infoWindow.marker = null;
       }
     });
   }
