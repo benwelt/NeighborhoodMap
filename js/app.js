@@ -59,6 +59,8 @@ function Brewery(place) {
   this.defaultMarker = 'img/beer_icon_dark.png';
   this.highlightedMarker = 'img/beer_icon_light.png';
 
+  this.visible = ko.observable(true);
+
   var d = new Date();
 
   this.marker = new google.maps.Marker({
@@ -68,6 +70,14 @@ function Brewery(place) {
     icon: self.defaultMarker,
     animation: google.maps.Animation.DROP
   });
+
+  this.showMarker = ko.computed(function() {
+    if (self.visible() === true) {
+      self.marker.setMap(map);
+    }else {
+      this.marker.setMap(null);
+    }
+  }, this);
 
   this.formatAddress = function(address) {
     var addressArray = address.split(",");
@@ -200,10 +210,14 @@ function ViewModel() {
   this.filteredBreweries = ko.computed(function() {
     var filter = self.filter().toLowerCase();
     if (!filter) {
+      self.places().forEach(function(place) {
+        place.visible(true);
+      })
       return self.places();
     } else {
       return ko.utils.arrayFilter(self.places(), function(place) {
         var name = place.title.toLowerCase().includes(filter);
+        place.visible(name);
         return name;
       });
     }
