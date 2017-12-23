@@ -79,12 +79,13 @@ function Brewery(place) {
     }
   }, this);
 
-  //
+  // Splits the formatted address result into an array
   this.formatAddress = function(address) {
     var addressArray = address.split(",");
     return addressArray;
   }
 
+  // Get all of the place data for the marker
   this.setInfoWindowContent = function(marker, infoWindow) {
     var service = new google.maps.places.PlacesService(map);
     var url = "https://api.wunderground.com/api/bd499f20ed8dfbd6/hourly/q/" + self.position['lat'] + "," + self.position['lng'] + ".json";
@@ -133,12 +134,14 @@ function Brewery(place) {
     });
   }
 
+  // Populate and open info window
   this.openInfoWindow = function(marker, infoWindow) {
     self.infoWindowContent = "<div><h6><strong>" + self.title + "</strong></h6></div>";
-    self.infoWindowContent += "<div class='open-status'>" + self.isOpen + "</div>";
+    self.infoWindowContent += "<div><strong>" + self.isOpen + "</strong></div>";
     self.infoWindowContent += "<div>" + self.phone + "</div>";
     self.infoWindowContent += "<div>" + self.address[0] + "</div>";
-    self.infoWindowContent += "<div>" + self.address[1] + ", " + self.address[2] + "</div><br>";
+    self.infoWindowContent += "<div>" + self.address[1] + ", " + self.address[2] + "</div><hr>";
+    self.infoWindowContent += "<div>Current weather at " + self.title + " is " + self.currentTemp + "° and " + self.currentWeather.toLowerCase() + ".</div>"
     if (self.weatherCode > 8) {
       self.infoWindowContent += "<div>The weather is a little ugly. Get a beer and stay inside.</div>";
     }else if (self.currentTemp < 50) {
@@ -147,7 +150,7 @@ function Brewery(place) {
       self.infoWindowContent += "<div>Get a beer and enjoy the weather!</div>";
     }
 
-    $('.current-temp').html("Current weather at " + self.title + ": " + self.currentTemp + "°");
+    $('.current-temp').html(self.currentTemp + "°");
     $('.weather-icon').attr({"src": self.weatherIcon,"title": self.currentWeather}).removeClass('hidden');
 
     infoWindow.setContent(self.infoWindowContent);
@@ -170,6 +173,7 @@ function Brewery(place) {
     self.setInfoWindowContent(this, infoWindow);
   });
 
+  // Zooms into and animates marker when menu item is clicked
   this.menuClick = function(place) {
     google.maps.event.trigger(self.marker, 'click');
     map.setCenter(self.position);
