@@ -76,13 +76,12 @@ function Brewery(place) {
 
   this.setInfoWindowContent = function(marker, infoWindow) {
     var service = new google.maps.places.PlacesService(map);
-    var url = "http://api.wunderground.com/api/bd499f20ed8dfbd6/conditions/q/" + self.position['lat'] + "," + self.position['lng'] + ".json";
+    var url = "https://api.wunderground.com/api/bd499f20ed8dfbd6/conditions/q/" + self.position['lat'] + "," + self.position['lng'] + ".json";
 
     $.getJSON(url, function(data) {
       self.currentTemp = data.current_observation.temperature_string;
       self.currentWeather = data.current_observation.weather;
       self.weatherIcon = data.current_observation.icon_url;
-      console.log(self.currentWeather);
     }).done(function() {
 
       service.textSearch({
