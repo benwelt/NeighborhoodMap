@@ -31,7 +31,6 @@ var breweries = [
 ];
 
 var map;
-var bounds;
 var infoWindow;
 
 // Resize and position the #map element when the window is resized
@@ -220,7 +219,7 @@ function ViewModel() {
     if (!filter) {
       self.places().forEach(function(place) {
         place.visible(true);
-      })
+      });
       return self.places();
     } else {
       return ko.utils.arrayFilter(self.places(), function(place) {
@@ -229,6 +228,7 @@ function ViewModel() {
         return name;
       });
     }
+
   }, self);
 
 }
