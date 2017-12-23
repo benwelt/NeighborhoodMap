@@ -81,7 +81,6 @@ function Brewery(place) {
   //
   this.formatAddress = function(address) {
     var addressArray = address.split(",");
-    console.log(addressArray);
     return addressArray;
   }
 
