@@ -61,8 +61,6 @@ function Brewery(place) {
 
   this.visible = ko.observable(true);
 
-  var d = new Date();
-
   this.marker = new google.maps.Marker({
     position: self.position,
     title: self.title,
@@ -71,6 +69,7 @@ function Brewery(place) {
     animation: google.maps.Animation.DROP
   });
 
+  // Shows or hides markers
   this.showMarker = ko.computed(function() {
     if (self.visible() === true) {
       self.marker.setMap(map);
@@ -79,9 +78,11 @@ function Brewery(place) {
     }
   }, this);
 
+  //
   this.formatAddress = function(address) {
     var addressArray = address.split(",");
-    return addressArray[0];
+    console.log(addressArray);
+    return addressArray;
   }
 
   this.setInfoWindowContent = function(marker, infoWindow) {
@@ -135,7 +136,8 @@ function Brewery(place) {
     self.infoWindowContent = "<div><h6><strong>" + self.title + "</strong></h6></div>";
     self.infoWindowContent += "<div class='open-status'>" + self.isOpen + "</div>";
     self.infoWindowContent += "<div>" + self.phone + "</div>";
-    self.infoWindowContent += "<div>" + self.address + "</div><br>";
+    self.infoWindowContent += "<div>" + self.address[0] + "</div>";
+    self.infoWindowContent += "<div>" + self.address[1] + ", " + self.address[2] + "</div><br>";
     if (self.currentWeather == 'Snow' || self.currentWeather == 'Rain') {
       self.infoWindowContent += "<div>The weather is a little ugly. Get a beer and stay inside.</div>";
     }else if (self.currentTemp < 50) {
@@ -207,6 +209,7 @@ function ViewModel() {
   // Dynamically adjust bounds of map after markers are loaded
   map.fitBounds(this.bounds);
 
+  // Filters breweries when text is entered into the search
   this.filteredBreweries = ko.computed(function() {
     var filter = self.filter().toLowerCase();
     if (!filter) {
