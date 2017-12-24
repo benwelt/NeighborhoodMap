@@ -10,6 +10,14 @@ html, body {
   padding: 5px;
 }
 
+.header-weather h6 {
+  display: inline;
+}
+
+.weather-icon {
+  height: 25px;
+}
+
 .wu-logo {
   margin: 0 0 5% 20%;
 }
