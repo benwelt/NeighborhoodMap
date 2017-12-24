@@ -18,6 +18,12 @@ The app is required to:
 
 The working website can be found [here](https://benwelt.github.io/NeighborhoodMap/).
 
-1. All of the locations load on startup
-2. Click on any marker to view more information about the location
-3. Open the drawer to view a list of all locations and to filter locations
+To run the website locally:
+1. Clone or download the repository
+2. Navigate to the repository folder on your computer
+3. Double click the `index.html` file
+
+
+* All of the locations load on startup
+* Click on any marker to view more information about the location
+* Open the drawer to view a list of all locations and to filter locations
