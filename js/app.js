@@ -31,7 +31,6 @@ var breweries = [
 ];
 
 var map;
-var infoWindow;
 
 // Resize and position the #map element when the window is resized
 $(window).resize(function() {
@@ -55,11 +54,15 @@ function Brewery(place) {
   this.currentWeather = "";
   this.weatherCode = "";
   this.weatherIcon = "";
+  this.headerWeather = "";
   this.infoWindowContent = "";
   this.defaultMarker = 'img/beer_icon_dark.png';
   this.highlightedMarker = 'img/beer_icon_light.png';
 
   this.visible = ko.observable(true);
+  
+
+  this.infoWindow = new google.maps.InfoWindow();
 
   this.marker = new google.maps.Marker({
     position: self.position,
@@ -149,8 +152,7 @@ function Brewery(place) {
       self.infoWindowContent += "<div>Get a beer and enjoy the weather!</div>";
     }
 
-    $('.current-temp').html(self.currentTemp + "°");
-    $('.weather-icon').attr({"src": self.weatherIcon,"title": self.currentWeather}).removeClass('hidden');
+    self.headerWeather = "<h6>" + self.currentTemp + "°</h6>" + "<img src='" + self.weatherIcon + "'class='weather-icon' alt='weather icon'>";
 
     infoWindow.setContent(self.infoWindowContent);
     infoWindow.open(map, marker);
@@ -169,25 +171,30 @@ function Brewery(place) {
 
   // Open info window onclick
   this.marker.addListener('click', function() {
-    self.setInfoWindowContent(this, infoWindow);
+    self.setInfoWindowContent(this, self.infoWindow);
+    self.bounce();
   });
+
+  this.bounce = function() {
+    // Animate marker
+    self.marker.setAnimation(google.maps.Animation.BOUNCE);
+    setTimeout(function() {
+      self.marker.setAnimation(null);
+    }, 3500);
+  }
+}
 
   // Zooms into and animates marker when menu item is clicked
   this.menuClick = function(place) {
     google.maps.event.trigger(self.marker, 'click');
     map.setCenter(self.position);
     map.setZoom(14);
-    // Animate marker
-    self.marker.setAnimation(google.maps.Animation.BOUNCE);
-    setTimeout(function() {
-      self.marker.setAnimation(null);
-    }, 3500);
+    self.bounce();
     // Close nav pane when link is clicked
     $('.mdl-layout__drawer').removeClass('is-visible');
     $('.mdl-layout__obfuscator').removeClass('is-visible');
   }
 
-}
 
 
 function ViewModel() {
@@ -202,7 +209,7 @@ function ViewModel() {
     fullscreenControl: false
   });
 
-  infoWindow = new google.maps.InfoWindow();
+  // infoWindow = new google.maps.InfoWindow();
   this.bounds = new google.maps.LatLngBounds();
 
   // Create Markers and Info Windows for all of the breweries
@@ -212,6 +219,16 @@ function ViewModel() {
   });
   // Dynamically adjust bounds of map after markers are loaded
   map.fitBounds(this.bounds);
+
+  this.setHeaderWeather = ko.computed(function() {
+    self.places().forEach(function(place) {
+      if (place.active() == true) {
+        console.log(place.title + " success");
+      }else {
+        console.log(place.title + " failed");
+      }
+    });
+  }, self);
 
   // Filters breweries when text is entered into the search
   this.filteredBreweries = ko.computed(function() {
