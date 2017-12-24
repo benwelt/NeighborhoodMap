@@ -16,14 +16,15 @@ The app is required to:
 
 ![Neighborhood Map](https://i.imgur.com/xL4nXOc.png)
 
-The working website can be found [here](https://benwelt.github.io/NeighborhoodMap/).
+A hosted version of the application can be found [here](https://benwelt.github.io/NeighborhoodMap/).
 
 To run the website locally:
 1. Clone or download the repository
 2. Navigate to the repository folder on your computer
 3. Double click the `index.html` file
 
-
+#### Using the website
 * All of the locations load on startup
 * Click on any marker to view more information about the location
 * Open the drawer to view a list of all locations and to filter locations
+* The current weather is displayed in the info window for each location
