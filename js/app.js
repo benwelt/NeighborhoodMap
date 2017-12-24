@@ -2,35 +2,43 @@
 var breweries = [
   {
     name: 'Epic Brewing Company',
-    location: {lat: 40.7511580, lng: -111.8878130}
+    location: {lat: 40.7511580, lng: -111.8878130},
+    id: 0
   },
   {
     name: 'Fisher Brewing Company',
-    location: {lat: 40.7521570, lng: -111.9004480}
+    location: {lat: 40.7521570, lng: -111.9004480},
+    id: 1
   },
   {
     name: 'Proper Brewing Co.',
-    location: {lat: 40.7505630, lng: -111.8906990}
+    location: {lat: 40.7505630, lng: -111.8906990},
+    id: 2
   },
   {
     name: 'Shades of Pale Brewery',
-    location: {lat: 40.7238790, lng: -111.8952380}
+    location: {lat: 40.7238790, lng: -111.8952380},
+    id: 3
   },
   {
     name: 'RoHa Brewing Project',
-    location: {lat: 40.7364690, lng: -111.8900970}
+    location: {lat: 40.7364690, lng: -111.8900970},
+    id: 4
   },
   {
     name: 'Mountain West Cider',
-    location: {lat: 40.7787720, lng: -111.9030370}
+    location: {lat: 40.7787720, lng: -111.9030370},
+    id: 5
   },
   {
     name: 'Red Rock Brewing Co.',
-    location: {lat: 40.7636480, lng: -111.8972400}
+    location: {lat: 40.7636480, lng: -111.8972400},
+    id: 6
   }
 ];
 
 var map;
+var infoWindow;
 
 // Resize and position the #map element when the window is resized
 $(window).resize(function() {
@@ -46,6 +54,7 @@ function Brewery(place) {
 
   this.title = place.name;
   this.position = place.location;
+  this.id = place.id;
   this.address = "";
   this.phone = "";
   this.isOpen = "";
@@ -54,15 +63,13 @@ function Brewery(place) {
   this.currentWeather = "";
   this.weatherCode = "";
   this.weatherIcon = "";
-  this.headerWeather = "";
+  this.headerWeather = ko.observable('');
   this.infoWindowContent = "";
   this.defaultMarker = 'img/beer_icon_dark.png';
   this.highlightedMarker = 'img/beer_icon_light.png';
 
   this.visible = ko.observable(true);
-  
-
-  this.infoWindow = new google.maps.InfoWindow();
+  this.active = ko.observable(false);
 
   this.marker = new google.maps.Marker({
     position: self.position,
@@ -97,6 +104,7 @@ function Brewery(place) {
       self.currentWeather = data.hourly_forecast[0].condition;
       self.weatherCode = data.hourly_forecast[0].fctcode;
       self.weatherIcon = data.hourly_forecast[0].icon_url;
+      self.headerWeather ("<h6>" + self.currentTemp + "°</h6>" + "<img src='" + self.weatherIcon + "'class='weather-icon' alt='weather icon'>");
     }).done(function() {
 
       service.textSearch({
@@ -138,7 +146,7 @@ function Brewery(place) {
 
   // Populate and open info window
   this.openInfoWindow = function(marker, infoWindow) {
-    self.infoWindowContent = "<div><h6><strong>" + self.title + "</strong></h6></div>";
+    self.infoWindowContent = "<div id='" + self.id + "'><h6><strong>" + self.title + "</strong></h6></div>";
     self.infoWindowContent += "<div><strong>" + self.isOpen + "</strong></div>";
     self.infoWindowContent += "<div>" + self.phone + "</div>";
     self.infoWindowContent += "<div>" + self.address[0] + "</div>";
@@ -151,8 +159,6 @@ function Brewery(place) {
     }else {
       self.infoWindowContent += "<div>Get a beer and enjoy the weather!</div>";
     }
-
-    self.headerWeather = "<h6>" + self.currentTemp + "°</h6>" + "<img src='" + self.weatherIcon + "'class='weather-icon' alt='weather icon'>";
 
     infoWindow.setContent(self.infoWindowContent);
     infoWindow.open(map, marker);
@@ -171,9 +177,12 @@ function Brewery(place) {
 
   // Open info window onclick
   this.marker.addListener('click', function() {
-    self.setInfoWindowContent(this, self.infoWindow);
+    self.setInfoWindowContent(this, infoWindow);
+    self.active(true);
     self.bounce();
   });
+
+
 
   this.bounce = function() {
     // Animate marker
@@ -202,6 +211,8 @@ function ViewModel() {
 
   this.places = ko.observableArray([]);
   this.filter = ko.observable('');
+  this.weather = ko.observable('');
+  this.placeID = ko.observable('');
 
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 40.760772, lng: -111.898087},
@@ -209,7 +220,7 @@ function ViewModel() {
     fullscreenControl: false
   });
 
-  // infoWindow = new google.maps.InfoWindow();
+  infoWindow = new google.maps.InfoWindow();
   this.bounds = new google.maps.LatLngBounds();
 
   // Create Markers and Info Windows for all of the breweries
@@ -220,12 +231,16 @@ function ViewModel() {
   // Dynamically adjust bounds of map after markers are loaded
   map.fitBounds(this.bounds);
 
+  self.places().forEach(function(place) {
+    place.marker.addListener('click', function() {
+      self.placeID(place.id);
+    });
+  });
+
   this.setHeaderWeather = ko.computed(function() {
     self.places().forEach(function(place) {
-      if (place.active() == true) {
-        console.log(place.title + " success");
-      }else {
-        console.log(place.title + " failed");
+      if (self.placeID() == place.id) {
+        self.weather(place.headerWeather());
       }
     });
   }, self);
