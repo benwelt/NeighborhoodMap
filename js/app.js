@@ -232,6 +232,7 @@ function ViewModel() {
     });
   });
 
+  // Adds a short version of the weather at the selected location to the nav header
   this.setHeaderWeather = ko.computed(function() {
     self.places().forEach(function(place) {
       if (self.placeID() == place.id) {
@@ -255,9 +256,7 @@ function ViewModel() {
         return name;
       });
     }
-
   }, self);
-
 }
 
 function initMap() {
