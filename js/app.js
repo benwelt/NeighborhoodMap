@@ -177,11 +177,8 @@ function Brewery(place) {
   // Open info window onclick
   this.marker.addListener('click', function() {
     self.setInfoWindowContent(this, infoWindow);
-    self.active(true);
     self.bounce();
   });
-
-
 
   this.bounce = function() {
     // Animate marker
@@ -194,10 +191,9 @@ function Brewery(place) {
 
   // Zooms into and animates marker when menu item is clicked
   this.menuClick = function(place) {
-    google.maps.event.trigger(self.marker, 'click');
-    map.setCenter(self.position);
+    google.maps.event.trigger(place.marker, 'click');
+    map.setCenter(place.position);
     map.setZoom(14);
-    self.bounce();
     // Close nav pane when link is clicked
     $('.mdl-layout__drawer').removeClass('is-visible');
     $('.mdl-layout__obfuscator').removeClass('is-visible');
@@ -210,8 +206,8 @@ function ViewModel() {
 
   this.places = ko.observableArray([]);
   this.filter = ko.observable('');
-  this.weather = ko.observable('');
   this.placeID = ko.observable('');
+  this.weather = ko.observable('');
 
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 40.760772, lng: -111.898087},
