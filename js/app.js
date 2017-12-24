@@ -63,13 +63,12 @@ function Brewery(place) {
   this.currentWeather = "";
   this.weatherCode = "";
   this.weatherIcon = "";
-  this.headerWeather = ko.observable('');
   this.infoWindowContent = "";
   this.defaultMarker = 'img/beer_icon_dark.png';
   this.highlightedMarker = 'img/beer_icon_light.png';
 
   this.visible = ko.observable(true);
-  this.active = ko.observable(false);
+  this.headerWeather = ko.observable('');
 
   this.marker = new google.maps.Marker({
     position: self.position,
