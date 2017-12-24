@@ -16,7 +16,7 @@ The app is required to:
 
 ![Neighborhood Map](https://i.imgur.com/xL4nXOc.png)
 
-A hosted version of the application can be found [here](https://benwelt.github.io/NeighborhoodMap/).
+A hosted version of the application can be found [here](https://benwelt.github.io/NeighborhoodMap/). Click on the link to open the web app.
 
 To run the website locally:
 1. Clone or download the repository
