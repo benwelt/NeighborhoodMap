@@ -263,3 +263,7 @@ function ViewModel() {
 function initMap() {
   ko.applyBindings(new ViewModel());
 }
+
+function mapError() {
+  alert("The map has failed to load. Try reloading the page.");
+}
